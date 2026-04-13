@@ -87,6 +87,21 @@ export function printResult(result: InspectResult): void {
     console.log("");
   }
 
+  // Compliance issues
+  if (result.complianceIssues.length > 0) {
+    console.log(chalk.bold.underline("Compliance Issues:"));
+    for (const issue of result.complianceIssues) {
+      const icon =
+        issue.severity === "error"
+          ? chalk.red("ERROR")
+          : issue.severity === "warning"
+          ? chalk.yellow("WARN ")
+          : chalk.blue("INFO ");
+      console.log(`  ${icon} [${issue.check}] ${issue.message}`);
+    }
+    console.log("");
+  }
+
   // Score card
   console.log(chalk.bold("═══════════════════════════════════════════"));
   console.log(chalk.bold("  Health Check Score"));
@@ -112,6 +127,8 @@ export function printResult(result: InspectResult): void {
   console.log(`  Prompts gettable:    ${promptColor(promptScore)}`);
   console.log(`  Schema errors:       ${score.schemaErrors > 0 ? chalk.red(String(score.schemaErrors)) : chalk.green("0")}`);
   console.log(`  Schema warnings:     ${score.schemaWarnings > 0 ? chalk.yellow(String(score.schemaWarnings)) : chalk.green("0")}`);
+  console.log(`  Compliance errors:   ${score.complianceErrors > 0 ? chalk.red(String(score.complianceErrors)) : chalk.green("0")}`);
+  console.log(`  Compliance warnings: ${score.complianceWarnings > 0 ? chalk.yellow(String(score.complianceWarnings)) : chalk.green("0")}`);
   console.log(`  Total time:          ${chalk.dim(`${result.durationMs}ms`)}`);
   console.log("");
 

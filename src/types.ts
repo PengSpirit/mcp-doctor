@@ -50,6 +50,12 @@ export interface PromptGetResult {
   durationMs: number;
 }
 
+export interface ComplianceIssue {
+  check: string;
+  message: string;
+  severity: "error" | "warning" | "info";
+}
+
 export interface SchemaIssue {
   tool: string;
   issue: string;
@@ -65,6 +71,7 @@ export interface InspectResult {
   resourceResults: ResourceReadResult[];
   promptResults: PromptGetResult[];
   schemaIssues: SchemaIssue[];
+  complianceIssues: ComplianceIssue[];
   score: {
     toolsCallable: number;
     toolsTotal: number;
@@ -74,6 +81,8 @@ export interface InspectResult {
     promptsTotal: number;
     schemaWarnings: number;
     schemaErrors: number;
+    complianceErrors: number;
+    complianceWarnings: number;
   };
   durationMs: number;
 }

@@ -15,6 +15,7 @@ import type {
 import { validateToolSchemas } from "./schema-validator.js";
 import { generateSampleArgs } from "./sample-args.js";
 import { printResult } from "./printer.js";
+import { checkCompliance } from "./spec-checker.js";
 
 export async function inspectServer(
   transport: Transport,
@@ -61,6 +62,7 @@ export async function inspectServer(
       resourceResults: [],
       promptResults: [],
       schemaIssues: [],
+      complianceIssues: [],
       score: {
         toolsCallable: 0,
         toolsTotal: 0,
@@ -70,6 +72,8 @@ export async function inspectServer(
         promptsTotal: 0,
         schemaWarnings: 0,
         schemaErrors: 0,
+        complianceErrors: 0,
+        complianceWarnings: 0,
       },
       durationMs: 0,
     };
@@ -136,7 +140,25 @@ export async function inspectServer(
       }
     }
 
-    // ── Phase 3: Call every tool ─────────────────────────────────
+    // ── Phase 2.5: Spec compliance ───────────��───────────────────
+    {
+      const s = ora("Checking MCP spec compliance...").start();
+      result.complianceIssues = checkCompliance({
+        capabilities: capabilities as Record<string, unknown> | undefined,
+        tools: result.tools,
+        resources: result.resources,
+        prompts: result.prompts,
+      });
+      const errors = result.complianceIssues.filter((i) => i.severity === "error").length;
+      const warnings = result.complianceIssues.filter((i) => i.severity === "warning").length;
+      if (errors > 0 || warnings > 0) {
+        s.warn(`Compliance: ${errors} errors, ${warnings} warnings`);
+      } else {
+        s.succeed("MCP spec compliance OK");
+      }
+    }
+
+    // ── Phase 3: Call every tool ─────────────────��───────────────
 
     if (result.tools.length > 0) {
       const s = ora("Calling tools...").start();
@@ -198,6 +220,8 @@ export async function inspectServer(
       promptsTotal: result.prompts.length,
       schemaErrors: result.schemaIssues.filter((i) => i.severity === "error").length,
       schemaWarnings: result.schemaIssues.filter((i) => i.severity === "warning").length,
+      complianceErrors: result.complianceIssues.filter((i) => i.severity === "error").length,
+      complianceWarnings: result.complianceIssues.filter((i) => i.severity === "warning").length,
     };
     result.durationMs = Date.now() - startTime;
 
