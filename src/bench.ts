@@ -62,7 +62,7 @@ export async function benchServer(
             `Tool "${tool.name}" timed out`
           );
           latencies.push(Date.now() - callStart);
-        } catch {
+        } catch (_err) {
           errors++;
           latencies.push(Date.now() - callStart);
         }
