@@ -82,3 +82,19 @@ export interface InspectOptions {
   json: boolean;
   timeout: number;
 }
+
+export type TransportKind = "stdio" | "sse" | "http";
+
+export interface StdioTargetSpec {
+  kind: "stdio";
+  command: string;
+  args: string[];
+}
+
+export interface HttpTargetSpec {
+  kind: "sse" | "http";
+  url: URL;
+  headers: Record<string, string>;
+}
+
+export type TargetSpec = StdioTargetSpec | HttpTargetSpec;
