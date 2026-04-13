@@ -93,6 +93,31 @@ export interface InspectOptions {
   html?: string;
 }
 
+export interface BenchResult {
+  serverName?: string;
+  tools: BenchToolResult[];
+  iterations: number;
+  durationMs: number;
+}
+
+export interface BenchToolResult {
+  tool: string;
+  latencies: number[];
+  p50: number;
+  p95: number;
+  p99: number;
+  min: number;
+  max: number;
+  throughput: number;
+  errors: number;
+}
+
+export interface BenchOptions {
+  iterations: number;
+  timeout: number;
+  json: boolean;
+}
+
 export type TransportKind = "stdio" | "sse" | "http";
 
 export interface StdioTargetSpec {
