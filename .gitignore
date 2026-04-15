@@ -5,3 +5,4 @@ dist/
 .env
 demo.tape
 scripts/
+graphify-out/
